@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 from .hammer import Hammer
-import numpy as np
+
 
 class HMC(Hammer):
-    def __init__(self, *args, **kwargs):
+    def __init__(self):
         """
         Initialize the Hamiltonian Monte Carlo object.
         """

@@ -13,7 +13,6 @@ class Hammer:
         log_prob_func,
         log_prob_args,
         initial,
-        
     ):
         """
         Initialize the Hammer object.
@@ -34,18 +33,15 @@ class Hammer:
             step_current (int):   The current step.
             rate_accept (float):  The acceptance rate.
         """
-        self.outfile_name  = outfile_name
-        self.num_step      = num_step
-        self.num_walk      = num_walk
-        self.num_param     = num_param
+        self.outfile_name = outfile_name
+        self.num_step = num_step
+        self.num_walk = num_walk
+        self.num_param = num_param
         self.log_prob_func = log_prob_func
         self.log_prob_args = log_prob_args
-        self.initial       = initial
+        self.initial = initial
 
         self.rng = np.random.default_rng()
         self.samples = np.zeros((self.num_step, self.num_walk, self.num_param))
         self.samples[0] = self.initial
         self.step_current = 0
-        
-
-    

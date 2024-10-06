@@ -26,7 +26,7 @@ def test_sampler():
         num_dim,
         log_prob_func,
         (np.zeros(num_dim), np.ones(num_dim)),
-        initial
+        initial,
     )
 
     hammer.run()
