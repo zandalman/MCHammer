@@ -5,3 +5,11 @@ build-backend = "hatchling.build"
 [project]
 name = "MCHammer"
 version = "0.1.0"
+description = "A package for posterior sampling in Python."
+readme = "README.md"
+license.file = "LICENSE"
+authors = [
+  { name = "Zack Andalman", email = "zack.andalman@princeton.edu" },
+  { name = "Yue Pan", email = "yue.pan@princeton.edu" },
+  { name = "James Sunseri", email = "js7501@princeton.edu" }
+]
