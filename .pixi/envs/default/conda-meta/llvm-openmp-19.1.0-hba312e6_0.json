@@ -1,0 +1,91 @@
+{
+  "build": "hba312e6_0",
+  "build_number": 0,
+  "constrains": [
+    "openmp 19.1.0|19.1.0.*"
+  ],
+  "depends": [
+    "__osx >=11.0"
+  ],
+  "license": "Apache-2.0 WITH LLVM-exception",
+  "license_family": "APACHE",
+  "md5": "2f97682b9d39cf0cc42bc96d55e543cb",
+  "name": "llvm-openmp",
+  "purls": [],
+  "sha256": "af4b01dbfdba42141c8db6ffd2909da9df35c878654ac0149421459128e037bd",
+  "size": 279779,
+  "subdir": "osx-arm64",
+  "timestamp": 1727798548683,
+  "version": "19.1.0",
+  "fn": "llvm-openmp-19.1.0-hba312e6_0.conda",
+  "url": "https://conda.anaconda.org/conda-forge/osx-arm64/llvm-openmp-19.1.0-hba312e6_0.conda",
+  "channel": "https://conda.anaconda.org/conda-forge/",
+  "extracted_package_dir": "/Users/jamessunseri/Library/Caches/rattler/cache/pkgs/llvm-openmp-19.1.0-hba312e6_0",
+  "files": [
+    "include/omp-tools.h",
+    "include/omp.h",
+    "include/ompt.h",
+    "include/ompx.h",
+    "lib/clang/19.1.0/include/omp.h",
+    "lib/libiomp5.dylib",
+    "lib/libomp.dylib"
+  ],
+  "paths_data": {
+    "paths_version": 1,
+    "paths": [
+      {
+        "_path": "include/omp-tools.h",
+        "path_type": "hardlink",
+        "sha256": "4876d0addcf2783953a6d0aeed8efc495ff0476b6a5784ca6e43bdd1c62df5be",
+        "sha256_in_prefix": "4876d0addcf2783953a6d0aeed8efc495ff0476b6a5784ca6e43bdd1c62df5be",
+        "size_in_bytes": 52077
+      },
+      {
+        "_path": "include/omp.h",
+        "path_type": "hardlink",
+        "sha256": "753099434038a0ce103078b86f1b24e09254fe07f38db43f640a3c79c8495f8c",
+        "sha256_in_prefix": "753099434038a0ce103078b86f1b24e09254fe07f38db43f640a3c79c8495f8c",
+        "size_in_bytes": 23889
+      },
+      {
+        "_path": "include/ompt.h",
+        "path_type": "hardlink",
+        "sha256": "4876d0addcf2783953a6d0aeed8efc495ff0476b6a5784ca6e43bdd1c62df5be",
+        "sha256_in_prefix": "4876d0addcf2783953a6d0aeed8efc495ff0476b6a5784ca6e43bdd1c62df5be",
+        "size_in_bytes": 52077
+      },
+      {
+        "_path": "include/ompx.h",
+        "path_type": "hardlink",
+        "sha256": "b6f3bb02332a6bc5d608cccc6ef5d0f5867472ddefa95f8f2a126b741970b786",
+        "sha256_in_prefix": "b6f3bb02332a6bc5d608cccc6ef5d0f5867472ddefa95f8f2a126b741970b786",
+        "size_in_bytes": 7559
+      },
+      {
+        "_path": "lib/clang/19.1.0/include/omp.h",
+        "path_type": "hardlink",
+        "sha256": "753099434038a0ce103078b86f1b24e09254fe07f38db43f640a3c79c8495f8c",
+        "sha256_in_prefix": "753099434038a0ce103078b86f1b24e09254fe07f38db43f640a3c79c8495f8c",
+        "size_in_bytes": 23889
+      },
+      {
+        "_path": "lib/libiomp5.dylib",
+        "path_type": "softlink",
+        "sha256": "70253a12d1810249c3fdda60a2357785e510986de422126c233eb23a3ff8318b",
+        "sha256_in_prefix": "9d723a8d879991df43f245cfd3f3a992b187ee533c2e75fc83c3143f65341c74",
+        "size_in_bytes": 824864
+      },
+      {
+        "_path": "lib/libomp.dylib",
+        "path_type": "hardlink",
+        "sha256": "70253a12d1810249c3fdda60a2357785e510986de422126c233eb23a3ff8318b",
+        "sha256_in_prefix": "70253a12d1810249c3fdda60a2357785e510986de422126c233eb23a3ff8318b",
+        "size_in_bytes": 824864
+      }
+    ]
+  },
+  "link": {
+    "source": "/Users/jamessunseri/Library/Caches/rattler/cache/pkgs/llvm-openmp-19.1.0-hba312e6_0",
+    "type": 1
+  }
+}

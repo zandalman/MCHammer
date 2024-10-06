@@ -1,0 +1,137 @@
+{
+  "build": "py312h42f095d_0",
+  "build_number": 0,
+  "constrains": [
+    "__osx >=11.0"
+  ],
+  "depends": [
+    "__osx >=11.0",
+    "libcxx >=17",
+    "python >=3.12,<3.13.0a0",
+    "python >=3.12,<3.13.0a0 *_cpython",
+    "python_abi 3.12.* *_cp312"
+  ],
+  "license": "MIT",
+  "license_family": "MIT",
+  "md5": "2b61340ecec3ca25736ec649fedd20cc",
+  "name": "ruff",
+  "purls": [
+    "pkg:pypi/ruff?source=hash-mapping"
+  ],
+  "sha256": "7b7235008612e43bc726d9153ea9178c18a791ac3376b2291bd18106659760ae",
+  "size": 6345226,
+  "subdir": "osx-arm64",
+  "timestamp": 1728067495666,
+  "version": "0.6.9",
+  "fn": "ruff-0.6.9-py312h42f095d_0.conda",
+  "url": "https://conda.anaconda.org/conda-forge/osx-arm64/ruff-0.6.9-py312h42f095d_0.conda",
+  "channel": "https://conda.anaconda.org/conda-forge/",
+  "extracted_package_dir": "/Users/jamessunseri/Library/Caches/rattler/cache/pkgs/ruff-0.6.9-py312h42f095d_0",
+  "files": [
+    "bin/ruff",
+    "lib/python3.12/site-packages/ruff-0.6.9.dist-info/INSTALLER",
+    "lib/python3.12/site-packages/ruff-0.6.9.dist-info/METADATA",
+    "lib/python3.12/site-packages/ruff-0.6.9.dist-info/RECORD",
+    "lib/python3.12/site-packages/ruff-0.6.9.dist-info/REQUESTED",
+    "lib/python3.12/site-packages/ruff-0.6.9.dist-info/WHEEL",
+    "lib/python3.12/site-packages/ruff-0.6.9.dist-info/direct_url.json",
+    "lib/python3.12/site-packages/ruff-0.6.9.dist-info/licenses/LICENSE",
+    "lib/python3.12/site-packages/ruff/__init__.py",
+    "lib/python3.12/site-packages/ruff/__main__.py",
+    "lib/python3.12/site-packages/ruff/__pycache__/__init__.cpython-312.pyc",
+    "lib/python3.12/site-packages/ruff/__pycache__/__main__.cpython-312.pyc"
+  ],
+  "paths_data": {
+    "paths_version": 1,
+    "paths": [
+      {
+        "_path": "bin/ruff",
+        "path_type": "hardlink",
+        "sha256": "fe094df049e564c209d569f9ff4a1265b1e3f0684eed26d0de9e2de33624fcc5",
+        "sha256_in_prefix": "fe094df049e564c209d569f9ff4a1265b1e3f0684eed26d0de9e2de33624fcc5",
+        "size_in_bytes": 22600496
+      },
+      {
+        "_path": "lib/python3.12/site-packages/ruff-0.6.9.dist-info/INSTALLER",
+        "path_type": "hardlink",
+        "sha256": "d0edee15f91b406f3f99726e44eb990be6e34fd0345b52b910c568e0eef6a2a8",
+        "sha256_in_prefix": "d0edee15f91b406f3f99726e44eb990be6e34fd0345b52b910c568e0eef6a2a8",
+        "size_in_bytes": 5
+      },
+      {
+        "_path": "lib/python3.12/site-packages/ruff-0.6.9.dist-info/METADATA",
+        "path_type": "hardlink",
+        "sha256": "b494f1d622916b195535b70dcb02d04fc12a8309ff81e6173a840a819a8c622c",
+        "sha256_in_prefix": "b494f1d622916b195535b70dcb02d04fc12a8309ff81e6173a840a819a8c622c",
+        "size_in_bytes": 25219
+      },
+      {
+        "_path": "lib/python3.12/site-packages/ruff-0.6.9.dist-info/RECORD",
+        "path_type": "hardlink",
+        "sha256": "e89a69a495aa952df5a932f7321ca740cc128bb1af2f435819ce629102584273",
+        "sha256_in_prefix": "e89a69a495aa952df5a932f7321ca740cc128bb1af2f435819ce629102584273",
+        "size_in_bytes": 874
+      },
+      {
+        "_path": "lib/python3.12/site-packages/ruff-0.6.9.dist-info/REQUESTED",
+        "path_type": "hardlink",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sha256_in_prefix": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size_in_bytes": 0
+      },
+      {
+        "_path": "lib/python3.12/site-packages/ruff-0.6.9.dist-info/WHEEL",
+        "path_type": "hardlink",
+        "sha256": "02cc0646cd516e40e80b1504f81e1873bacdd7141661bcee0abccc06e6459215",
+        "sha256_in_prefix": "02cc0646cd516e40e80b1504f81e1873bacdd7141661bcee0abccc06e6459215",
+        "size_in_bytes": 101
+      },
+      {
+        "_path": "lib/python3.12/site-packages/ruff-0.6.9.dist-info/direct_url.json",
+        "path_type": "hardlink",
+        "sha256": "5e7a3651ffff638e5bd288fc4e845f40da36dca21ad3cd8814fb7b3e35bc7794",
+        "sha256_in_prefix": "5e7a3651ffff638e5bd288fc4e845f40da36dca21ad3cd8814fb7b3e35bc7794",
+        "size_in_bytes": 92
+      },
+      {
+        "_path": "lib/python3.12/site-packages/ruff-0.6.9.dist-info/licenses/LICENSE",
+        "path_type": "hardlink",
+        "sha256": "3209c0b7fb7257c05b16433728c1e974bac40000fef171b8e9e89f095623c954",
+        "sha256_in_prefix": "3209c0b7fb7257c05b16433728c1e974bac40000fef171b8e9e89f095623c954",
+        "size_in_bytes": 69789
+      },
+      {
+        "_path": "lib/python3.12/site-packages/ruff/__init__.py",
+        "path_type": "hardlink",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sha256_in_prefix": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size_in_bytes": 0
+      },
+      {
+        "_path": "lib/python3.12/site-packages/ruff/__main__.py",
+        "path_type": "hardlink",
+        "sha256": "feeaa7be2c98a415798d977595dc39633204ab9818ef5e8c8d181e10d0fa7fe9",
+        "sha256_in_prefix": "feeaa7be2c98a415798d977595dc39633204ab9818ef5e8c8d181e10d0fa7fe9",
+        "size_in_bytes": 2330
+      },
+      {
+        "_path": "lib/python3.12/site-packages/ruff/__pycache__/__init__.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "6ac873ccaa8fae9e018babcd07a8e476b5ebfd05625c70f438f4bd6997db573b",
+        "sha256_in_prefix": "6ac873ccaa8fae9e018babcd07a8e476b5ebfd05625c70f438f4bd6997db573b",
+        "size_in_bytes": 142
+      },
+      {
+        "_path": "lib/python3.12/site-packages/ruff/__pycache__/__main__.cpython-312.pyc",
+        "path_type": "hardlink",
+        "sha256": "af8bcfdef4072789a7e8d3ed6a1399ee8026449f04cafdd5bb24964a24e9c580",
+        "sha256_in_prefix": "af8bcfdef4072789a7e8d3ed6a1399ee8026449f04cafdd5bb24964a24e9c580",
+        "size_in_bytes": 3381
+      }
+    ]
+  },
+  "link": {
+    "source": "/Users/jamessunseri/Library/Caches/rattler/cache/pkgs/ruff-0.6.9-py312h42f095d_0",
+    "type": 1
+  }
+}
