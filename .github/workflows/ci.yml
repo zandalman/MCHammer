@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Many color libraries just need this to be set to any value, but at least
+  # one distinguishes color depth, where "3" -> "256-bit color".
+  FORCE_COLOR: 3
+
+jobs:
+  pre-commit:
+    name: Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - uses: pre-commit/action@v3.0.1
+        with:
+          extra_args: --hook-stage manual --all-files
+
+  checks:
+    name: Check Python ${{ matrix.python-version }} on ${{ matrix.runs-on }}
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      fail-fast: false
+      matrix:
+        runs-on: [ubuntu-latest, macos-latest, macos-13] #linux, Mac M1, Mac intel
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: prefix-dev/setup-pixi@v0.8.1
+        with:
+          pixi-version: v0.30.0
+
+      - name: Test package
+        run: pixi run pytest

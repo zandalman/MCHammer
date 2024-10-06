@@ -1,9 +1,11 @@
+from __future__ import annotations
 import numpy as np
 
 
-class Hammer(object):
-
-    def __init__(self, outfile_name, num_step, num_walk, num_param, log_prob_func, log_prob_args, std_proposal, initial, frac_burn=0.2):
+class Hammer:
+    def __init__(
+      self, outfile_name, num_step, num_walk, num_param, log_prob_func, log_prob_args, std_proposal, initial, frac_burn=0.2
+    ):
         '''
         Initialize the Hammer object.
 
