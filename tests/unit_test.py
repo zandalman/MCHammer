@@ -6,6 +6,9 @@ import MCHammer
 
 
 def test_sampler():
+    '''
+    Test that the sampler recovers a multi-variate Gaussian distribution with approximately the correct standard deviation.
+    '''
     num_step = 2**10
     num_walk = 32
     num_dim = 3
