@@ -35,6 +35,7 @@ class Hammer:
         self.frac_burn = frac_burn
         self.initial = initial
         
+        self.rng = np.random.default_rng()
         self.samples = np.zeros((self.num_step, self.num_walk, self.num_param))
         self.samples[0] = self.initial
         self.step_current = 0
@@ -45,13 +46,13 @@ class Hammer:
         Step the Metropolis-Hastings algorithm.
         '''
         current = self.samples[self.step_current]
-        proposal = current + np.random.normal(0, self.std_proposal, size=(self.num_walk, self.num_param))
+        proposal = current + self.rng.normal(0, self.std_proposal, size=(self.num_walk, self.num_param))
         
         log_prob_current = self.log_prob_func(current, *self.log_prob_args)
         log_prob_proposal = self.log_prob_func(proposal, *self.log_prob_args)
         prob_accept = np.exp(log_prob_proposal - log_prob_current)
 
-        cond_accept = np.random.rand(self.num_walk) < prob_accept
+        cond_accept = self.rng.random((self.num_walk)) < prob_accept
         if self.step_current > self.frac_burn * self.num_step:
             self.rate_accept += np.sum(cond_accept)
     
