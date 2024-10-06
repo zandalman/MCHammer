@@ -49,4 +49,4 @@ jobs:
           pixi-version: v0.30.0
 
       - name: Test package
-        run: pixi run pytest 
+        run: pixi run pytest
