@@ -19,16 +19,14 @@ def test_sampler():
     initial = np.zeros((num_walk, num_dim))
     initial[:] = np.linspace(-1, 1, num_walk)[:, None]
 
-    hammer = MCHammer.Hammer(
+    hammer = MCHammer.Metropolis(
         "placeholder.h5",
         num_step,
         num_walk,
         num_dim,
         log_prob_func,
         (np.zeros(num_dim), np.ones(num_dim)),
-        1.65,
-        initial,
-        frac_burn=0.2,
+        initial
     )
 
     hammer.run()
