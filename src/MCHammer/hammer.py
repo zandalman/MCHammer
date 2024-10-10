@@ -2,6 +2,12 @@ from __future__ import annotations
 
 import numpy as np
 
+__all__ = ["Hammer"]
+
+
+def __dir__():
+    return __all__
+
 
 class Hammer:
     def __init__(
