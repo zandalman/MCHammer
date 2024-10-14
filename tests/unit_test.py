@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import numpy as np
-
+import MCHammer
 
 def test_gauss_hammer():
     """
