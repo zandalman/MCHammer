@@ -50,7 +50,7 @@ class Hammer(abc.ABC):
         **kwargs,
     ):
         assert (
-            np.abs(frac_burn - 0.5) >= 0.5
+            np.abs(frac_burn - 0.5) <= 0.5
         ), f"Burn fraction {frac_burn:.3g} outside the allowed range [0, 1]."
 
         assert state_init.shape == (
