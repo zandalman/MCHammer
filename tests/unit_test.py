@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import hammer
 import numpy as np
 
 
