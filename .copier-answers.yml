@@ -1,0 +1,13 @@
+# Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
+_commit: 2024.08.19
+_src_path: gh:scientific-python/cookie
+backend: hatch
+email: zack.andalman@princeton.edu
+full_name: The Princeton Hammers
+license: BSD
+org: zandalman
+project_name: mchammers
+project_short_description: A toy package for sampling posteriors. Our final project
+    for APC 524 at Princeton University.
+url: https://github.com/zandalman/mchammers
+vcs: true
