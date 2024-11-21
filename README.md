@@ -3,6 +3,7 @@
 [![Actions Status][actions-badge]][actions-link]
 [![Documentation Status][rtd-badge]][rtd-link]
 
+[![codecov](https://codecov.io/github/zandalman/mchammers/graph/badge.svg?token=H7OGFZG3XT)](https://codecov.io/github/zandalman/mchammers)
 [![PyPI version][pypi-version]][pypi-link]
 [![Conda-Forge][conda-badge]][conda-link]
 [![PyPI platforms][pypi-platforms]][pypi-link]
