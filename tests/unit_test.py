@@ -22,7 +22,7 @@ def test_gauss_hammer():
     state_init = np.zeros((num_walk, num_dim))
     state_init[:] = np.linspace(-1, 1, num_walk)[:, None]
 
-    gh = GaussHammer(state_init, std_prob, num_step, num_walk, num_dim, mu=0, sig=1)
-    gh.run()
+    gh = GaussHammer(std_prob, num_step, num_walk, num_dim, mu=0, sig=1)
+    gh.run(state_init)
     std = np.std(gh.samples, axis=(0, 1))
     assert np.all(std) < 1.2
