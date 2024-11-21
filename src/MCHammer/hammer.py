@@ -115,7 +115,7 @@ class Hammer(abc.ABC):
         ), f"Initial state shape ({state_init.shape[0]:%d}, {state_init.shape[1]:%d}) \
                 does not match number of walkers and number of dimensions ({self.num_walk:%d}, {self.num_dim:%d})"
 
-        self.state_curr = self.state_init
+        self.state_curr = state_init
         for _i in range(self.num_step - 1):
             self.step()
 
