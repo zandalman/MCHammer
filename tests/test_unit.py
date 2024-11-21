@@ -7,7 +7,7 @@ import mchammers
 
 def test_gauss_hammer():
     """
-    Test that the sampler recovers a multi-variate Gaussian 
+    Test that the sampler recovers a multi-variate Gaussian
     distribution with approximately the correct standard deviation.
     """
 
