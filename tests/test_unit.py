@@ -2,15 +2,16 @@ from __future__ import annotations
 
 import numpy as np
 
-import MCHammer
+import mchammers
 
 
 def test_gauss_hammer():
     """
-    Test that the sampler recovers a multi-variate Gaussian distribution with approximately the correct standard deviation.
+    Test that the sampler recovers a multi-variate Gaussian 
+    distribution with approximately the correct standard deviation.
     """
 
-    class GaussHammer(MCHammer.hammer.Hammer):
+    class GaussHammer(mchammers.hammer.Hammer):
         def log_prob(self, x, mu, sig):
             return -0.5 * np.sum(((x - mu) / sig) ** 2, axis=-1)
 

@@ -1,68 +1,112 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
+
 [project]
-name = "MCHammer"
+name = "mchammers"
 authors = [
   { name = "Zack Andalman", email = "zack.andalman@princeton.edu" },
   { name = "Yue Pan", email = "yue.pan@princeton.edu" },
-  { name = "James Sunseri", email = "js7501@princeton.edu" }
+  { name = "James Sunseri", email = "js7501@princeton.edu" },
 ]
-version = "0.1.0"
-description = "A package for posterior sampling in Python."
+description = "A toy package for sampling posteriors. Our final project for APC 524 at Princeton University."
 readme = "README.md"
 license.file = "LICENSE"
-requires-python = ">=3.10"
+requires-python = ">=3.8"
 classifiers = [
   "Development Status :: 1 - Planning",
   "Intended Audience :: Science/Research",
   "Intended Audience :: Developers",
-  "License :: OSI Approved :: MIT License",
+  "License :: OSI Approved :: BSD License",
   "Operating System :: OS Independent",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Topic :: Scientific/Engineering",
+  "Typing :: Typed",
 ]
-dependencies = ["numpy", "h5py"]
+dynamic = ["version"]
+dependencies = ["numpy"]
 
 [project.optional-dependencies]
 test = [
+  "numpy",
   "pytest >=6",
   "pytest-cov >=3",
 ]
 dev = [
+  "numpy",
   "pytest >=6",
   "pytest-cov >=3",
 ]
+docs = [
+  "sphinx>=7.0",
+  "myst_parser>=0.13",
+  "sphinx_copybutton",
+  "sphinx_autodoc_typehints",
+  "furo>=2023.08.17",
+]
 
 [project.urls]
-Homepage = "https://github.com/zandalman/MCHammer/"
-"Bug Tracker" = "https://github.com/zandalman/MCHammer/issues"
+Homepage = "https://github.com/zandalman/mchammers"
+"Bug Tracker" = "https://github.com/zandalman/mchammers/issues"
+Discussions = "https://github.com/zandalman/mchammers/discussions"
+Changelog = "https://github.com/zandalman/mchammers/releases"
 
-[tool.pixi.project]
-channels = ["conda-forge"]
-platforms = ["linux-64", "osx-arm64", "osx-64"]
 
-[tool.pixi.dependencies]
-numpy = ">=2.0"
-pytest = "*"
-ruff = ">=0.6.5,<0.7"
-
-[tool.pixi.pypi-dependencies]
-MCHammer = { path = ".", editable = true }
+[tool.hatch]
+version.source = "vcs"
+build.hooks.vcs.version-file = "src/mchammers/_version.py"
 
 [tool.hatch.envs.default]
 features = ["test"]
 scripts.test = "pytest {args}"
 
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = ["-ra", "--showlocals", "--strict-markers", "--strict-config"]
+xfail_strict = true
+filterwarnings = [
+  "error",
+]
+log_cli_level = "INFO"
+testpaths = [
+  "tests",
+]
+
+
+[tool.coverage]
+run.source = ["mchammers"]
+report.exclude_also = [
+  '\.\.\.',
+  'if typing.TYPE_CHECKING:',
+]
+
+[tool.mypy]
+files = ["src", "tests"]
+python_version = "3.8"
+warn_unused_configs = true
+strict = true
+enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
+warn_unreachable = true
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+
+[[tool.mypy.overrides]]
+module = "mchammers.*"
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+
+
 [tool.ruff]
-line-length = 88 # Black Style
-indent-width = 4 # Black Style
 
 [tool.ruff.lint]
 extend-select = [
@@ -94,19 +138,24 @@ ignore = [
   "ISC001",   # Conflicts with formatter
 ]
 isort.required-imports = ["from __future__ import annotations"]
+# Uncomment if using a _compat.typing backport
+# typing-modules = ["mchammers._compat.typing"]
 
-[tool.ruff.format]
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["T20"]
+"noxfile.py" = ["T20"]
 
-# Like Black, use double quotes for strings.
-quote-style = "double"
 
-# Like Black, indent with spaces, rather than tabs.
-indent-style = "space"
-
-# Like Black, respect magic trailing commas.
-skip-magic-trailing-comma = false
-
-# Like Black, automatically detect the appropriate line ending.
-line-ending = "auto"
-
-docstring-code-line-length = "dynamic"
+[tool.pylint]
+py-version = "3.8"
+ignore-paths = [".*/_version.py"]
+reports.output-format = "colorized"
+similarities.ignore-imports = "yes"
+messages_control.disable = [
+  "design",
+  "fixme",
+  "line-too-long",
+  "missing-module-docstring",
+  "missing-function-docstring",
+  "wrong-import-position",
+]
