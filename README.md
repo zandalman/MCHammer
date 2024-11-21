@@ -10,6 +10,7 @@
 [![GitHub Discussion][github-discussions-badge]][github-discussions-link]
 
 ## Coverage
+
 ![SunBurst Plot](https://codecov.io/github/zandalman/mchammers/graphs/sunburst.svg?token=H7OGFZG3XT)
 
 <!-- SPHINX-START -->
