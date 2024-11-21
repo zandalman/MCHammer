@@ -17,7 +17,6 @@ class Hammer(abc.ABC):
     The Hammer object.
 
     Args
-        state_init (np.ndarray): The initial state.
         std_prop (float):        The standard deviation of the proposal distribution.
         num_step (int):          The number of steps.
         num_walk (int):          The number of walkers.
@@ -38,7 +37,6 @@ class Hammer(abc.ABC):
 
     def __init__(
         self,
-        state_init,
         std_prop,
         num_step,
         num_walk,
@@ -53,13 +51,6 @@ class Hammer(abc.ABC):
             np.abs(frac_burn - 0.5) <= 0.5
         ), f"Burn fraction {frac_burn:.3g} outside the allowed range [0, 1]."
 
-        assert state_init.shape == (
-            num_walk,
-            num_dim,
-        ), f"Initial state shape ({state_init.shape[0]:%d}, {state_init.shape[1]:%d}) \
-                does not match number of walkers and number of dimensions ({num_walk:%d}, {num_dim:%d})"
-
-        self.state_init = state_init
         self.std_prop = std_prop
         self.num_step = num_step
         self.num_walk = num_walk
@@ -72,7 +63,7 @@ class Hammer(abc.ABC):
 
         self.idx_step = 0
         self.rate_accept = 0.0
-        self.state_curr = self.state_init
+        self.state_curr = np.zeros((self.num_walk, self.num_dim))
         self.rng = np.random.default_rng(self.seed)
         self.num_step_burn = int(self.frac_burn * self.num_step)
         self.samples = np.zeros(
@@ -111,10 +102,20 @@ class Hammer(abc.ABC):
         # increment the step index
         self.idx_step += 1
 
-    def run(self):
+    def run(self, state_init):
         """
         Run the Metropolis-Hastings algorithm.
+
+        Args
+            state_init (np.ndarray): The initial state.
         """
+        assert state_init.shape == (
+            self.num_walk,
+            self.num_dim,
+        ), f"Initial state shape ({state_init.shape[0]:%d}, {state_init.shape[1]:%d}) \
+                does not match number of walkers and number of dimensions ({self.num_walk:%d}, {self.num_dim:%d})"
+
+        self.state_curr = state_init
         for _i in range(self.num_step - 1):
             self.step()
 
