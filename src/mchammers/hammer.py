@@ -16,23 +16,39 @@ class Hammer(abc.ABC):
     """
     The Hammer object.
 
-    Args
-        std_prop (float):        The standard deviation of the proposal distribution.
-        num_step (int):          The number of steps.
-        num_walk (int):          The number of walkers.
-        num_dim (int):           The number of dimensions.
-        path_outfile (str):      The path to the output HDF5 file.
-        frac_burn (float):       The burn fraction.
-        seed (int):              The random number generator seed.
-        log_prob_args (dict):    The arguments for the log probability function.
+    Parameters:
+    ------------
+        std_prop (float):
+            The standard deviation of the proposal distribution.
+        num_step (int):
+            The number of steps.
+        num_walk (int):
+            The number of walkers.
+        num_dim (int):
+            The number of dimensions.
+        path_outfile (str):
+            The path to the output HDF5 file.
+        frac_burn (float):
+            The burn fraction.
+        seed (int):
+            The random number generator seed.
+        log_prob_args (dict):
+            The arguments for the log probability function.
 
-    Attr
-        idx_step (int):                       The index of the current step.
-        rate_accept(float):                   The acceptance rate.
-        state_curr (np.ndarray):              The current state.
-        rng (np.random._generator.Generator): The random number generator.
-        num_sample (int):                     The number of samples.
-        samples (np.ndarray):                 The sample array.
+    Attr:
+    ------------
+        idx_step (int):
+            The index of the current step.
+        rate_accept (float):
+            The acceptance rate.
+        state_curr (np.ndarray):
+            The current state.
+        rng (np.random._generator.Generator):
+            The random number generator.
+        num_sample (int):
+            The number of samples.
+        samples (np.ndarray):
+            The sample array.
     """
 
     def __init__(
@@ -72,10 +88,27 @@ class Hammer(abc.ABC):
 
     @abc.abstractmethod
     def log_prob(self, x, **kwargs):
+        """
+        The log probability function which must be implemented by the user.
+
+        Args:
+        ------------
+            x (np.ndarray):
+                The state vector.
+            **kwargs:
+                The keyword arguments for the log probability function.
+
+        Returns:
+        ------------
+            float:
+                The log probability
+        """
         return 0.0
 
     def step(self):
-        """Step the Metropolis-Hastings algorithm."""
+        """
+        Step the Metropolis-Hastings algorithm.
+        """
         # calculated the proposal state
         state_prop = self.state_curr + self.rng.normal(
             0, self.std_prop, size=(self.num_walk, self.num_dim)
@@ -107,7 +140,8 @@ class Hammer(abc.ABC):
         Run the Metropolis-Hastings algorithm.
 
         Args
-            state_init (np.ndarray): The initial state.
+            state_init (np.ndarray):
+                The initial state.
         """
         assert state_init.shape == (
             self.num_walk,
