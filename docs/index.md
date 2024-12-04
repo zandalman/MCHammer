@@ -6,7 +6,7 @@
 
 basic_usage.md
 api_tab.md
-
+notebooks/test
 ```
 
 ```{include} ../README.md
@@ -28,9 +28,3 @@ This package includes a basic Metropolis-Hastings Markov Chain Monte Carlo
 ### Authors
 
 Zack Andalman, Yue Pan, James Sunseri
-
-<!-- # Thumbnails gallery
-
-```{nbgallery}
-notebooks/test
-``` -->

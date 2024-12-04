@@ -16,10 +16,11 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx_autodoc_typehints",
     "sphinx_copybutton",
-    # "nbsphinx",
+    "nbsphinx",
+    "IPython.sphinxext.ipython_console_highlighting",
 ]
 
-source_suffix = [".rst", ".md", ".ipynb"]
+source_suffix = [".rst", ".md"]
 exclude_patterns = [
     "_build",
     "**.ipynb_checkpoints",
@@ -28,6 +29,7 @@ exclude_patterns = [
     ".env",
     ".venv",
 ]
+
 
 html_theme = "furo"
 html_logo = "images/mchammer.png"
@@ -65,11 +67,11 @@ nitpick_ignore = [
 
 always_document_param_types = True
 
-# nbsphinx_execute = "auto"
+nbsphinx_execute = "never"
 
-# nbsphinx_execute_arguments = [
-#     "--InlineBackend.figure_formats={'png2x'}",
-#     "--InlineBackend.rc=figure.dpi=96",
-# ]
+nbsphinx_execute_arguments = [
+    "--InlineBackend.figure_formats={'png2x'}",
+    "--InlineBackend.rc=figure.dpi=96",
+]
 
-# nbsphinx_kernel_name = "python3"
+nbsphinx_kernel_name = "python3"
