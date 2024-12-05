@@ -1,4 +1,4 @@
-mchammers package
+mchammers package API
 =================
 
 .. automodule:: mchammers

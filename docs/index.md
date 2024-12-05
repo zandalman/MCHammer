@@ -1,14 +1,5 @@
 # mchammers
 
-```{toctree}
-:maxdepth: 2
-:hidden:
-
-basic_usage.md
-api_tab.md
-notebooks/test
-```
-
 ```{include} ../README.md
 :start-after: <!-- SPHINX-START -->
 ```
@@ -25,6 +16,20 @@ probability distributions using common methods found in astrophysical research.
 This package includes a basic Metropolis-Hastings Markov Chain Monte Carlo
 (MCMC) method and a Nested Sampling MCMC method.
 
-### Authors
+Authors: Zack Andalman, Yue Pan, James Sunseri
 
-Zack Andalman, Yue Pan, James Sunseri
+```{toctree}
+:maxdepth: 2
+:caption: Getting Started
+:hidden:
+
+notebooks/tutorial
+```
+
+```{toctree}
+:maxdepth: 2
+:caption: API
+:hidden:
+
+api/mchammers
+```
