@@ -63,11 +63,15 @@ class Sampler(abc.ABC):
             (self.num_step - self.num_step_burn, self.num_walker, self.num_dim)
         )
 
-        self.groups = [np.full(self.num_walker, True)]
-        self.size_groups = [self.num_walker]
+        self.groups = self.init_groups()
+        self.size_groups = [np.sum(group) for group in self.groups]
 
     @abc.abstractmethod
-    def sample_prop(self, state: NDArray[float]) -> NDArray[float]:
+    def init_groups(self) -> list[NDArray[bool]]:
+        return []
+
+    @abc.abstractmethod
+    def sample_prop(self, state: NDArray[float], idx_group: int) -> NDArray[float]:
         return np.array([0.0])
 
     @abc.abstractmethod
@@ -76,13 +80,17 @@ class Sampler(abc.ABC):
     ) -> NDArray[float]:
         return np.array([0.0])
 
-    def step(self):
+    def step(self) -> None:
         """
         Step the sampler.
         """
-        for size, group in zip(self.size_groups, self.groups):
+        for idx_group in range(len(self.groups)):
+            # get the group
+            group = self.groups[idx_group]
+            size = self.size_groups[idx_group]
+
             # calculate the proposal state
-            state_prop = self.sample_prop(self.state_curr[group])
+            state_prop = self.sample_prop(self.state_curr, idx_group)
 
             # calculate the acceptance probability
             log_prob_curr = self.log_prob_func(self.state_curr[group])
@@ -101,7 +109,7 @@ class Sampler(abc.ABC):
         # increment the step index
         self.idx_step += 1
 
-    def run(self, state_init: NDArray):
+    def run(self, state_init: NDArray) -> None:
         """
         Run the sampler.
 
@@ -149,10 +157,48 @@ class SamplerBasic(Sampler):
         super().__init__(num_step, num_walker, num_dim, log_prob_func, frac_burn, seed)
         self.cov = cov
 
-    def sample_prop(self, state: NDArray[float]):
+    def init_groups(self):
+        return [np.full(self.num_walker, True)]
+
+    def sample_prop(self, state: NDArray[float], idx_group: int) -> NDArray[float]:
+        assert idx_group == 0
         return self.rng.normal(
             state, self.cov[None, :], size=(self.num_walker, self.num_dim)
         )
 
     def prob_accept(self, log_prob_curr, log_prob_prop):
         return np.exp(log_prob_prop - log_prob_curr)
+
+
+# class SamplerStretch(Sampler):
+#     def __init__(
+#         self,
+#         num_step: int,
+#         num_walker: int,
+#         num_dim: int,
+#         log_prob_func: Callable[[NDArray[float]], NDArray[float]],
+#         frac_burn: float = 0.2,
+#         seed: int | None = None,
+#     ):
+#         super().__init__(num_step, num_walker, num_dim, log_prob_func, frac_burn, seed)
+
+#     def init_groups(self):
+#         size_group1 = self.num_walker // 2
+#         group1 = np.full(self.num_walker, True)
+#         group2 = np.full(self.num_walker, True)
+#         group1[size_group1:] = False
+#         group2[:size_group1] = False
+#         return [group1, group2]
+
+#     def sample_prop(self, state: NDArray[float], idx_group: int):
+#         group = self.groups[idx_group]
+#         size1 = self.size_groups[idx_group]
+#         size2 = self.num_walker - size1
+#         other = self.rng.integers(low=0, high=size2, size=size1, dtype=int)
+#         xi = self.rng.random(self.num_walker)
+#         wparam = (xi + 1.0)**2 / 2.0
+#         return state[other] + wparam[:, None] * (state[group] - state[other])
+
+#     def prob_accept(self, log_prob_curr, log_prob_prop):
+
+#         return np.exp(log_prob_prop - log_prob_curr)
