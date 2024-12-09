@@ -33,16 +33,22 @@ classifiers = [
   "Typing :: Typed",
 ]
 dynamic = ["version"]
-dependencies = ["numpy"]
+dependencies = [
+  "numpy",
+  "mpi4py",
+  ]
 
 [project.optional-dependencies]
 test = [
   "numpy",
+  "mpi4py",
   "pytest >=6",
+  "pytest-mpi",
   "pytest-cov >=3",
 ]
 dev = [
   "numpy",
+  "mpi4py",
   "pytest >=6",
   "pytest-cov >=3",
 ]
@@ -94,6 +100,21 @@ report.exclude_also = [
   '\.\.\.',
   'if typing.TYPE_CHECKING:',
 ]
+
+[tool.mypy]
+files = ["src", "tests"]
+python_version = "3.8"
+warn_unused_configs = true
+strict = true
+enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
+warn_unreachable = true
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+
+[[tool.mypy.overrides]]
+module = "mchammers.*"
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
 
 [tool.ruff]
 
