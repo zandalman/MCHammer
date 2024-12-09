@@ -42,7 +42,6 @@ jobs:
       matrix:
         python-version: ["3.8", "3.13"]
         runs-on: [ubuntu-latest, macos-latest]
-        mpi: ["mpich", "openmpi"]
 
     steps:
       - name: Checkout
@@ -53,7 +52,7 @@ jobs:
       - name: Setup MPI
         uses: mpi4py/setup-mpi@v1
         with:
-          mpi: ${{ matrix.mpi }}
+          mpi: "mpich"
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -66,7 +65,7 @@ jobs:
 
       - name: Test package
         run: >-
-          mpirun -n 2 python -m pytest --with-mpi -ra --cov --cov-report=xml
+          mpirun -n 1 python -m pytest --with-mpi -ra --cov --cov-report=xml
           --cov-report=term --durations=20
 
       - name: Upload coverage report

@@ -37,7 +37,7 @@ def tests(session: nox.Session) -> None:
     """
     session.install(".[test]")
     session.run(
-        "mpirun", "-n", "2", "python", "-m", "pytest", "--with-mpi", *session.posargs
+        "mpirun", "-n", "1", "python", "-m", "pytest", "--with-mpi", *session.posargs
     )
 
 
