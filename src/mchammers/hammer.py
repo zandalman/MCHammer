@@ -10,7 +10,7 @@ from numpy.typing import NDArray
 __all__ = ["Sampler", "SamplerBasic", "SamplerMPI", "SamplerBasicMPI"]
 
 
-def __dir__():
+def __dir__() -> list[str]:
     return __all__
 
 
@@ -236,10 +236,10 @@ class SamplerMPI(Sampler):
     def post_process(self) -> None:
         rate_accept_buff = np.array([0.0])
         samples_buff = np.zeros_like(self.samples)
-        self.comm.Reduce(
+        self.comm.Reduce(  # type: ignore[attr-defined]
             np.array([self.rate_accept]), rate_accept_buff, op=self.mpi_sim, root=0
         )
-        self.comm.Reduce(self.samples, samples_buff, op=self.mpi_sim, root=0)
+        self.comm.Reduce(self.samples, samples_buff, op=self.mpi_sim, root=0)  # type: ignore[attr-defined]
         if self.rank == 0:
             self.rate_accept = rate_accept_buff[0]
             self.samples = samples_buff
@@ -278,7 +278,9 @@ class SamplerBasic(Sampler):
             self.state_curr, self.cov[None, :], size=(self.num_walker, self.num_dim)
         )
 
-    def prob_accept(self, log_prob_curr, log_prob_prop):
+    def prob_accept(
+        self, log_prob_curr: NDArray[float], log_prob_prop: NDArray[float]
+    ) -> NDArray[float]:
         return np.exp(log_prob_prop - log_prob_curr)
 
 
@@ -330,5 +332,7 @@ class SamplerBasicMPI(SamplerMPI):
             self.state_curr[group], self.cov[None, :], size=(size_group, self.num_dim)
         )
 
-    def prob_accept(self, log_prob_curr, log_prob_prop):
+    def prob_accept(
+        self, log_prob_curr: NDArray[float], log_prob_prop: NDArray[float]
+    ) -> NDArray[float]:
         return np.exp(log_prob_prop - log_prob_curr)
