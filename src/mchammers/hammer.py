@@ -332,3 +332,116 @@ class SamplerBasicMPI(SamplerMPI):
 
     def prob_accept(self, log_prob_curr, log_prob_prop):
         return np.exp(log_prob_prop - log_prob_curr)
+    
+    
+    
+class SamplerStretch(Sampler):
+    """
+    The SamplerStretch object.
+    Implements the affine-invariant ensemble sampler using the parallel stretch move.
+
+    Parameters:
+    ------------
+        a:
+            The stretch move parameter, a > 1.
+    """
+
+    def __init__(
+        self,
+        num_step: int,
+        num_walker: int,
+        num_dim: int,
+        log_prob_func: Callable[[NDArray[float]], NDArray[float]],
+        a: float = 2.0,
+        frac_burn: float = 0.2,
+        seed: int | None = None,
+        flatten: bool = True,
+    ):
+        super().__init__(num_step, num_walker, num_dim, log_prob_func, frac_burn, seed, flatten)
+        assert a > 1.0, f"The stretch move parameter 'a' must be greater than 1. Got {a}."
+        self.a = a
+
+        # Split walkers into two groups for parallel updates
+        half = num_walker // 2
+        self.groups = [np.arange(half), np.arange(half, num_walker)]
+
+    def sample_Z(self, size: int) -> NDArray[float]:
+        """
+        Sample Z from g(Z) ∝ 1/sqrt(Z) within [1/a, a] using the inverse transform sampling
+        """
+        lower, upper = 1 / self.a, self.a
+        u = self.rng.uniform(0, 1, size=size)  # Uniform random variable
+        Z = (u * (np.sqrt(upper) - np.sqrt(lower)) + np.sqrt(lower)) ** 2  # Transform uniform into g(Z)
+        return Z
+
+    def sample_prop(self, group: NDArray[int], comp_group: NDArray[int]) -> NDArray[float]:
+        """
+        Sample the proposal distribution using the stretch move.
+
+        Parameters:
+        ------------
+            group:
+                Indices of the walkers in the current group.
+            comp_group:
+                Indices of the walkers in the complementary group.
+
+        Returns:
+        ------------
+            An array of proposed samples.
+        """
+        size_group = len(group)
+        state_curr = self.state_curr[group]
+
+        # Draw complementary walkers for each walker in the group
+        walker_comp = self.rng.choice(comp_group, size=size_group, replace=True)
+        X_j = self.state_curr[walker_comp]
+
+        # Sample Z for the stretch move
+        Z = self.sample_Z(size_group)
+
+        # Calculate the proposed position Y
+        Y = X_j + Z[:, None] * (state_curr - X_j)
+        return Y, Z
+
+    def prob_accept(self, log_prob_curr: NDArray[float], log_prob_prop: NDArray[float], Z: NDArray[float]) -> NDArray[float]:
+        q = (Z ** (self.num_dim - 1)) * np.exp(log_prob_prop - log_prob_curr)
+        return np.minimum(1, q)
+
+    def step(self) -> None:
+        """
+        Perform a single parallel stretch move update step.
+        """
+        total_accepted = 0 
+        
+        for i in range(2):  # Alternate between two groups
+            group = self.groups[i]
+            comp_group = self.groups[1 - i]
+
+            # Propose new samples
+            Y, Z = self.sample_prop(group, comp_group)
+
+            # Compute log probabilities
+            state_curr = self.state_curr[group]
+            log_prob_curr = self.log_prob_func(state_curr)
+            log_prob_prop = self.log_prob_func(Y)
+
+            # Compute acceptance probability
+            prob_accept = self.prob_accept(log_prob_curr, log_prob_prop, Z)
+
+            # Accept or reject proposals
+            r = self.rng.uniform(0, 1, size=len(group))
+            accepted = r < prob_accept
+            state_curr[accepted] = Y[accepted]
+            
+            total_accepted += np.sum(accepted) 
+            # Update the current group
+            self.state_curr[group] = state_curr
+            
+        # Add current state to samples if past burn-in
+        if self.idx_step >= self.num_step_burn:
+            self.rate_accept += total_accepted  
+            self.samples[self.idx_step - self.num_step_burn] = self.state_curr
+
+        # Increment the step index
+        self.idx_step += 1
+
