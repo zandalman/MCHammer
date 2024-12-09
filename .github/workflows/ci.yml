@@ -26,7 +26,7 @@ jobs:
           fetch-depth: 0
       - uses: mpi4py/setup-mpi@v1
         with:
-          mpi: 'openmp'
+          mpi: 'openmpi'
       - uses: actions/setup-python@v5
         with:
           python-version: "3.x"
