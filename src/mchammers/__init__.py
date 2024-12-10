@@ -9,4 +9,4 @@ from __future__ import annotations
 from ._version import version as __version__
 from .hammer import Sampler, SamplerBasic, SamplerBasicMPI, SamplerMPI
 
-__all__ = ["__version__", "Sampler", "SamplerBasic", "SamplerMPI", "SamplerBasicMPI"]
+__all__ = ["__version__", "Sampler", "SamplerBasic", "SamplerMPI", "SamplerBasicMPI", "SamplerStretch"]
