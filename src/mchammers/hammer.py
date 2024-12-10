@@ -360,8 +360,12 @@ class SamplerStretch(Sampler):
         seed: int | None = None,
         flatten: bool = True,
     ):
-        super().__init__(num_step, num_walker, num_dim, log_prob_func, frac_burn, seed, flatten)
-        assert a > 1.0, f"The stretch move parameter 'a' must be greater than 1. Got {a}."
+        super().__init__(
+            num_step, num_walker, num_dim, log_prob_func, frac_burn, seed, flatten
+        )
+        assert (
+            a > 1.0
+        ), f"The stretch move parameter 'a' must be greater than 1. Got {a}."
         self.a = a
 
         # Split walkers into two groups for parallel updates
@@ -375,11 +379,9 @@ class SamplerStretch(Sampler):
         """
         lower, upper = 1 / self.a, self.a
         u = self.rng.uniform(0, 1, size=size)  # Uniform random variable
-        Z = (u * (np.sqrt(upper) - np.sqrt(lower)) + np.sqrt(lower)) ** 2  # Transform uniform into g(Z)
-        #Z = (1+u)**2 / 2
-        return Z
+        return (u * (np.sqrt(upper) - np.sqrt(lower)) + np.sqrt(lower)) ** 2
 
-    def sample_prop(self,  idx_group: int) -> NDArray[float]:
+    def sample_prop(self, idx_group: int) -> NDArray[float]:
         """
         Sample the proposal distribution using the stretch move.
 
@@ -411,8 +413,8 @@ class SamplerStretch(Sampler):
         self.Z = Z
         return Y
 
-    def prob_accept(self, log_prob_curr: NDArray[float], log_prob_prop: NDArray[float]) -> NDArray[float]:
+    def prob_accept(
+        self, log_prob_curr: NDArray[float], log_prob_prop: NDArray[float]
+    ) -> NDArray[float]:
         q = (self.Z ** (self.num_dim - 1)) * np.exp(log_prob_prop - log_prob_curr)
         return np.minimum(1, q)
-    
-    
