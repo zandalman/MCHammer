@@ -336,9 +336,8 @@ class SamplerBasicMPI(SamplerMPI):
         self, log_prob_curr: NDArray[float], log_prob_prop: NDArray[float]
     ) -> NDArray[float]:
         return np.exp(log_prob_prop - log_prob_curr)
-    
-    
-    
+
+
 class SamplerStretch(Sampler):
     """
     The SamplerStretch object.
@@ -368,6 +367,7 @@ class SamplerStretch(Sampler):
         # Split walkers into two groups for parallel updates
         half = num_walker // 2
         self.groups = [np.arange(half), np.arange(half, num_walker)]
+        self.size_groups = [half, half]
 
     def sample_Z(self, size: int) -> NDArray[float]:
         """
@@ -376,9 +376,10 @@ class SamplerStretch(Sampler):
         lower, upper = 1 / self.a, self.a
         u = self.rng.uniform(0, 1, size=size)  # Uniform random variable
         Z = (u * (np.sqrt(upper) - np.sqrt(lower)) + np.sqrt(lower)) ** 2  # Transform uniform into g(Z)
+        #Z = (1+u)**2 / 2
         return Z
 
-    def sample_prop(self, group: NDArray[int], comp_group: NDArray[int]) -> NDArray[float]:
+    def sample_prop(self,  idx_group: int) -> NDArray[float]:
         """
         Sample the proposal distribution using the stretch move.
 
@@ -393,6 +394,8 @@ class SamplerStretch(Sampler):
         ------------
             An array of proposed samples.
         """
+        group = self.groups[idx_group]
+        comp_group = self.groups[1 - idx_group]
         size_group = len(group)
         state_curr = self.state_curr[group]
 
@@ -405,47 +408,11 @@ class SamplerStretch(Sampler):
 
         # Calculate the proposed position Y
         Y = X_j + Z[:, None] * (state_curr - X_j)
-        return Y, Z
+        self.Z = Z
+        return Y
 
-    def prob_accept(self, log_prob_curr: NDArray[float], log_prob_prop: NDArray[float], Z: NDArray[float]) -> NDArray[float]:
-        q = (Z ** (self.num_dim - 1)) * np.exp(log_prob_prop - log_prob_curr)
+    def prob_accept(self, log_prob_curr: NDArray[float], log_prob_prop: NDArray[float]) -> NDArray[float]:
+        q = (self.Z ** (self.num_dim - 1)) * np.exp(log_prob_prop - log_prob_curr)
         return np.minimum(1, q)
-
-    def step(self) -> None:
-        """
-        Perform a single parallel stretch move update step.
-        """
-        total_accepted = 0 
-        
-        for i in range(2):  # Alternate between two groups
-            group = self.groups[i]
-            comp_group = self.groups[1 - i]
-
-            # Propose new samples
-            Y, Z = self.sample_prop(group, comp_group)
-
-            # Compute log probabilities
-            state_curr = self.state_curr[group]
-            log_prob_curr = self.log_prob_func(state_curr)
-            log_prob_prop = self.log_prob_func(Y)
-
-            # Compute acceptance probability
-            prob_accept = self.prob_accept(log_prob_curr, log_prob_prop, Z)
-
-            # Accept or reject proposals
-            r = self.rng.uniform(0, 1, size=len(group))
-            accepted = r < prob_accept
-            state_curr[accepted] = Y[accepted]
-            
-            total_accepted += np.sum(accepted) 
-            # Update the current group
-            self.state_curr[group] = state_curr
-            
-        # Add current state to samples if past burn-in
-        if self.idx_step >= self.num_step_burn:
-            self.rate_accept += total_accepted  
-            self.samples[self.idx_step - self.num_step_burn] = self.state_curr
-
-        # Increment the step index
-        self.idx_step += 1
-
+    
+    
