@@ -20,7 +20,13 @@ def lint(session: nox.Session) -> None:
     """
     session.install("pre-commit")
     session.run(
-        "pre-commit", "run", "--all-files", "--show-diff-on-failure", *session.posargs
+        "pre-commit",
+        "run",
+        "--all-files",
+        "--show-diff-on-failure",
+        "--hook-stage",
+        "manual",
+        *session.posargs,
     )
 
 
@@ -30,7 +36,9 @@ def tests(session: nox.Session) -> None:
     Run the unit and regular tests.
     """
     session.install(".[test]")
-    session.run("pytest", *session.posargs)
+    session.run(
+        "mpirun", "-n", "1", "python", "-m", "pytest", "--with-mpi", *session.posargs
+    )
 
 
 @nox.session(reuse_venv=True)
