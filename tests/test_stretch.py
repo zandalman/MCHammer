@@ -23,6 +23,4 @@ def test_sampler_stretch():
     sampler.run(state_init)
 
     std = np.std(sampler.samples, axis=0)
-    print(f"Standard deviation of samples: {std}")
     assert np.all(std < 1.2), f"Standard deviation out of bounds: {std}"
-    return sampler.samples
