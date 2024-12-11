@@ -3,14 +3,17 @@ from __future__ import annotations
 import abc
 import warnings
 from collections.abc import Callable
+from typing import Any, Dict, Sequence, Union
 
 import numpy as np
 from numpy.typing import NDArray
 
+Numeric = Union[int, float]
+
 __all__ = ["Sampler", "SamplerBasic", "SamplerMPI", "SamplerBasicMPI"]
 
 
-def __dir__() -> list[str]:
+def __dir__() -> Sequence[str]:
     return __all__
 
 
@@ -26,12 +29,14 @@ class Sampler(abc.ABC):
             The number of walkers.
         num_dim:
             The number of dimensions.
+        prior_bounds:
+            The prior bounds on the model parameters.
         log_prob_func:
             The log probability function.
         args:
-            Arguments of the log probability function.
+            The arguments of the log probability function.
         kwargs:
-            Keyword arguments of the log probability function.
+            The keyword arguments of the log probability function.
         frac_burn:
             The burn fraction.
         seed:
@@ -45,10 +50,11 @@ class Sampler(abc.ABC):
         num_step: int,
         num_walker: int,
         num_dim: int,
-        log_prob_func: Callable,
-        args: list = [],
-        kwargs: dict = {},
-        frac_burn: float = 0.2,
+        prior_bounds: Sequence[tuple[Numeric, Numeric]],
+        log_prob_func: Callable[..., NDArray[Numeric]],
+        args: Sequence[Any] | None = None,
+        kwargs: Dict[Any, Any] | None = None,
+        frac_burn: Numeric = 0.2,
         seed: int | None = None,
         flatten: bool = True,
     ):
@@ -56,12 +62,22 @@ class Sampler(abc.ABC):
             np.abs(frac_burn - 0.5) <= 0.5
         ), f"Burn fraction {frac_burn:.3g} outside the allowed range [0, 1]."
 
+        assert (
+            len(prior_bounds) == num_dim
+        ), f"Number of prior bounds {len(prior_bounds):d} does not match number of dimensions {num_dim:d}."
+
+        for i, (low, high) in enumerate(prior_bounds):
+            assert (
+                low <= high
+            ), f"Lower bound {low:.3g} is larger than upper bound {high:.3g} for parameter f{i:d}."
+
         self.num_step = num_step
         self.num_walker = num_walker
         self.num_dim = num_dim
+        self.prior_bounds = prior_bounds
         self.log_prob_func = log_prob_func
-        self.args = args
-        self.kwargs = kwargs
+        self.args = [] if args is None else args
+        self.kwargs = {} if kwargs is None else kwargs
         self.frac_burn = frac_burn
         self.seed = seed
         self.flatten = flatten
@@ -75,11 +91,17 @@ class Sampler(abc.ABC):
             (self.num_step - self.num_step_burn, self.num_walker, self.num_dim)
         )
 
+        self.state_init = np.zeros((self.num_walker, self.num_dim))
+        for i, (low, high) in enumerate(prior_bounds):
+            self.state_init[:, i] = (
+                self.rng.random(self.num_walker) * (high - low) + low
+            )
+
         self.groups = [np.full(self.num_walker, True)]
         self.size_groups = [self.num_walker]
 
     @abc.abstractmethod
-    def sample_prop(self, idx_group: int) -> NDArray[float]:
+    def sample_prop(self, idx_group: int) -> NDArray[Numeric]:
         """
         Sample the proposal distribution.
 
@@ -96,8 +118,8 @@ class Sampler(abc.ABC):
 
     @abc.abstractmethod
     def prob_accept(
-        self, log_prob_curr: NDArray[float], log_prob_prop: NDArray[float]
-    ) -> NDArray[float]:
+        self, log_prob_curr: NDArray[Numeric], log_prob_prop: NDArray[Numeric]
+    ) -> NDArray[Numeric]:
         """
         Calculate the acceptance probability.
 
@@ -166,7 +188,7 @@ class Sampler(abc.ABC):
         # increment the step index
         self.idx_step += 1
 
-    def run(self, state_init: NDArray) -> None:
+    def run(self) -> None:
         """
         Run the sampler.
 
@@ -175,18 +197,12 @@ class Sampler(abc.ABC):
             state_init:
                 The initial state.
         """
-        assert state_init.shape == (
-            self.num_walker,
-            self.num_dim,
-        ), f"Initial state shape ({state_init.shape[0]:%d}, {state_init.shape[1]:%d}) \
-                does not match number of walkers and number of dimensions ({self.num_walker:%d}, {self.num_dim:%d})"
-
         # reset samples
         self.samples = np.zeros(
             (self.num_step - self.num_step_burn, self.num_walker, self.num_dim)
         )
 
-        self.state_curr = state_init
+        self.state_curr = self.state_init
         for _i in range(self.num_step - 1):
             self.step()
 
@@ -214,14 +230,15 @@ class SamplerMPI(Sampler):
         num_step: int,
         num_walker: int,
         num_dim: int,
-        log_prob_func: Callable,
+        prior_bounds: Sequence[tuple[Numeric, Numeric]],
+        log_prob_func: Callable[..., NDArray[Numeric]],
         comm: object,
         mpi_sum: object,
         size: int,
         rank: int,
-        args: list = [],
-        kwargs: dict = {},
-        frac_burn: float = 0.2,
+        args: Sequence[Any] | None = None,
+        kwargs: Dict[Any, Any] | None = None,
+        frac_burn: Numeric = 0.2,
         seed: int | None = None,
         flatten: bool = True,
     ):
@@ -229,6 +246,7 @@ class SamplerMPI(Sampler):
             num_step,
             num_walker,
             num_dim,
+            prior_bounds,
             log_prob_func,
             args,
             kwargs,
@@ -270,8 +288,8 @@ class SamplerBasic(Sampler):
 
     Parameters:
     ------------
-        cov:
-            The covariance of the proposal distribution in each dimension.
+        std:
+            The standard deviation of the proposal distribution relative to the prior bounds.
     """
 
     def __init__(
@@ -279,11 +297,12 @@ class SamplerBasic(Sampler):
         num_step: int,
         num_walker: int,
         num_dim: int,
-        log_prob_func: Callable,
-        cov: NDArray[float],
-        args: list = [],
-        kwargs: dict = {},
-        frac_burn: float = 0.2,
+        prior_bounds: Sequence[tuple[Numeric, Numeric]],
+        log_prob_func: Callable[..., NDArray[Numeric]],
+        std_rel_prop: Numeric,
+        args: Sequence[Any] | None = None,
+        kwargs: Dict[Any, Any] | None = None,
+        frac_burn: Numeric = 0.2,
         seed: int | None = None,
         flatten: bool = True,
     ):
@@ -291,6 +310,7 @@ class SamplerBasic(Sampler):
             num_step,
             num_walker,
             num_dim,
+            prior_bounds,
             log_prob_func,
             args,
             kwargs,
@@ -298,17 +318,23 @@ class SamplerBasic(Sampler):
             seed,
             flatten,
         )
-        self.cov = cov
+        assert (
+            np.abs(std_rel_prop - 0.5) <= 0.5
+        ), f"Relative standard deviation of the proposal distribution {std_rel_prop:.3g} outside the allowed range [0, 1]."
 
-    def sample_prop(self, idx_group: int) -> NDArray[float]:
+        self.std_prop = np.zeros((self.num_walker, self.num_dim))
+        for i, (low, high) in enumerate(self.prior_bounds):
+            self.std_prop[:, i] = std_rel_prop * (high - low)
+
+    def sample_prop(self, idx_group: int) -> NDArray[Numeric]:
         assert idx_group == 0
         return self.rng.normal(
-            self.state_curr, self.cov[None, :], size=(self.num_walker, self.num_dim)
+            self.state_curr, self.std_prop, size=(self.num_walker, self.num_dim)
         )
 
     def prob_accept(
-        self, log_prob_curr: NDArray[float], log_prob_prop: NDArray[float]
-    ) -> NDArray[float]:
+        self, log_prob_curr: NDArray[Numeric], log_prob_prop: NDArray[Numeric]
+    ) -> NDArray[Numeric]:
         return np.exp(log_prob_prop - log_prob_curr)
 
 
@@ -327,15 +353,16 @@ class SamplerBasicMPI(SamplerMPI):
         num_step: int,
         num_walker: int,
         num_dim: int,
-        log_prob_func: Callable,
+        prior_bounds: Sequence[tuple[Numeric, Numeric]],
+        log_prob_func: Callable[..., NDArray[Numeric]],
         comm: object,
         mpi_sum: object,
         size: int,
         rank: int,
-        cov: NDArray[float],
-        args: list = [],
-        kwargs: dict = {},
-        frac_burn: float = 0.2,
+        std_rel_prop: Numeric,
+        args: Sequence[Any] | None = None,
+        kwargs: Dict[Any, Any] | None = None,
+        frac_burn: Numeric = 0.2,
         seed: int | None = None,
         flatten: bool = True,
     ):
@@ -343,6 +370,7 @@ class SamplerBasicMPI(SamplerMPI):
             num_step,
             num_walker,
             num_dim,
+            prior_bounds,
             log_prob_func,
             comm,
             mpi_sum,
@@ -354,19 +382,25 @@ class SamplerBasicMPI(SamplerMPI):
             seed,
             flatten,
         )
-        self.cov = cov
+        assert (
+            np.abs(std_rel_prop - 0.5) <= 0.5
+        ), f"Relative standard deviation of the proposal distribution {std_rel_prop:.3g} outside the allowed range [0, 1]."
 
-    def sample_prop(self, idx_group: int) -> NDArray[float]:
+        self.std_prop = np.zeros((self.num_walker, self.num_dim))
+        for i, (low, high) in enumerate(self.prior_bounds):
+            self.std_prop[:, i] = std_rel_prop * (high - low)
+
+    def sample_prop(self, idx_group: int) -> NDArray[Numeric]:
         assert idx_group == 0
         group = self.groups[idx_group]
         size_group = self.size_groups[idx_group]
         return self.rng.normal(
-            self.state_curr[group], self.cov[None, :], size=(size_group, self.num_dim)
+            self.state_curr[group], self.std_prop, size=(size_group, self.num_dim)
         )
 
     def prob_accept(
-        self, log_prob_curr: NDArray[float], log_prob_prop: NDArray[float]
-    ) -> NDArray[float]:
+        self, log_prob_curr: NDArray[Numeric], log_prob_prop: NDArray[Numeric]
+    ) -> NDArray[Numeric]:
         return np.exp(log_prob_prop - log_prob_curr)
 
 
@@ -386,11 +420,12 @@ class SamplerStretch(Sampler):
         num_step: int,
         num_walker: int,
         num_dim: int,
-        log_prob_func: Callable,
-        args: list = [],
-        kwargs: dict = {},
-        a: float = 2.0,
-        frac_burn: float = 0.2,
+        prior_bounds: Sequence[tuple[Numeric, Numeric]],
+        log_prob_func: Callable[..., NDArray[Numeric]],
+        args: Sequence[Any] | None = None,
+        kwargs: Dict[Any, Any] | None = None,
+        a: Numeric = 2.0,
+        frac_burn: Numeric = 0.2,
         seed: int | None = None,
         flatten: bool = True,
     ):
@@ -398,6 +433,7 @@ class SamplerStretch(Sampler):
             num_step,
             num_walker,
             num_dim,
+            prior_bounds,
             log_prob_func,
             args,
             kwargs,
@@ -415,7 +451,7 @@ class SamplerStretch(Sampler):
         self.groups = [np.arange(half), np.arange(half, num_walker)]
         self.size_groups = [half, half]
 
-    def sample_Z(self, size: int) -> NDArray[float]:
+    def sample_Z(self, size: int) -> NDArray[Numeric]:
         """
         Sample Z from g(Z) ∝ 1/sqrt(Z) within [1/a, a] using the inverse transform sampling
         """
@@ -423,7 +459,7 @@ class SamplerStretch(Sampler):
         u = self.rng.uniform(0, 1, size=size)  # Uniform random variable
         return (u * (np.sqrt(upper) - np.sqrt(lower)) + np.sqrt(lower)) ** 2
 
-    def sample_prop(self, idx_group: int) -> NDArray[float]:
+    def sample_prop(self, idx_group: int) -> NDArray[Numeric]:
         """
         Sample the proposal distribution using the stretch move.
 
@@ -456,7 +492,7 @@ class SamplerStretch(Sampler):
         return Y
 
     def prob_accept(
-        self, log_prob_curr: NDArray[float], log_prob_prop: NDArray[float]
-    ) -> NDArray[float]:
+        self, log_prob_curr: NDArray[Numeric], log_prob_prop: NDArray[Numeric]
+    ) -> NDArray[Numeric]:
         q = (self.Z ** (self.num_dim - 1)) * np.exp(log_prob_prop - log_prob_curr)
         return np.minimum(1, q)
