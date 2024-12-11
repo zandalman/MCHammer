@@ -263,6 +263,7 @@ class SamplerMPI(Sampler):
         idx_walker_min = min(self.rank * num_walker_per_rank, self.num_walker)
         idx_walker_max = min((self.rank + 1) * num_walker_per_rank, self.num_walker)
         self.slice = slice(idx_walker_min, idx_walker_max)
+        print(idx_walker_min, idx_walker_max)
 
         group = np.full(self.num_walker, False)
         group[self.slice] = True
