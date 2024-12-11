@@ -28,6 +28,10 @@ class Sampler(abc.ABC):
             The number of dimensions.
         log_prob_func:
             The log probability function.
+        args:
+            Arguments of the log probability function.
+        kwargs:
+            Keyword arguments of the log probability function.
         frac_burn:
             The burn fraction.
         seed:
@@ -41,7 +45,9 @@ class Sampler(abc.ABC):
         num_step: int,
         num_walker: int,
         num_dim: int,
-        log_prob_func: Callable[[NDArray[float]], NDArray[float]],
+        log_prob_func: Callable,
+        args: list = [],
+        kwargs: dict = {},
         frac_burn: float = 0.2,
         seed: int | None = None,
         flatten: bool = True,
@@ -54,6 +60,8 @@ class Sampler(abc.ABC):
         self.num_walker = num_walker
         self.num_dim = num_dim
         self.log_prob_func = log_prob_func
+        self.args = args
+        self.kwargs = kwargs
         self.frac_burn = frac_burn
         self.seed = seed
         self.flatten = flatten
@@ -141,8 +149,8 @@ class Sampler(abc.ABC):
             state_prop = self.sample_prop(idx_group)
 
             # calculate the acceptance probability
-            log_prob_curr = self.log_prob_func(state_curr)
-            log_prob_prop = self.log_prob_func(state_prop)
+            log_prob_curr = self.log_prob_func(state_curr, *self.args, **self.kwargs)
+            log_prob_prop = self.log_prob_func(state_prop, *self.args, **self.kwargs)
             prob_accept = self.prob_accept(log_prob_curr, log_prob_prop)
 
             # move accepted proposals into the current state
@@ -206,17 +214,27 @@ class SamplerMPI(Sampler):
         num_step: int,
         num_walker: int,
         num_dim: int,
-        log_prob_func: Callable[[NDArray[float]], NDArray[float]],
+        log_prob_func: Callable,
         comm: object,
         mpi_sum: object,
         size: int,
         rank: int,
+        args: list = [],
+        kwargs: dict = {},
         frac_burn: float = 0.2,
         seed: int | None = None,
         flatten: bool = True,
     ):
         super().__init__(
-            num_step, num_walker, num_dim, log_prob_func, frac_burn, seed, flatten
+            num_step,
+            num_walker,
+            num_dim,
+            log_prob_func,
+            args,
+            kwargs,
+            frac_burn,
+            seed,
+            flatten,
         )
         self.comm = comm
         self.mpi_sim = mpi_sum
@@ -261,14 +279,24 @@ class SamplerBasic(Sampler):
         num_step: int,
         num_walker: int,
         num_dim: int,
-        log_prob_func: Callable[[NDArray[float]], NDArray[float]],
+        log_prob_func: Callable,
         cov: NDArray[float],
+        args: list = [],
+        kwargs: dict = {},
         frac_burn: float = 0.2,
         seed: int | None = None,
         flatten: bool = True,
     ):
         super().__init__(
-            num_step, num_walker, num_dim, log_prob_func, frac_burn, seed, flatten
+            num_step,
+            num_walker,
+            num_dim,
+            log_prob_func,
+            args,
+            kwargs,
+            frac_burn,
+            seed,
+            flatten,
         )
         self.cov = cov
 
@@ -299,12 +327,14 @@ class SamplerBasicMPI(SamplerMPI):
         num_step: int,
         num_walker: int,
         num_dim: int,
-        log_prob_func: Callable[[NDArray[float]], NDArray[float]],
+        log_prob_func: Callable,
         comm: object,
         mpi_sum: object,
         size: int,
         rank: int,
         cov: NDArray[float],
+        args: list = [],
+        kwargs: dict = {},
         frac_burn: float = 0.2,
         seed: int | None = None,
         flatten: bool = True,
@@ -318,6 +348,8 @@ class SamplerBasicMPI(SamplerMPI):
             mpi_sum,
             size,
             rank,
+            args,
+            kwargs,
             frac_burn,
             seed,
             flatten,
@@ -354,14 +386,24 @@ class SamplerStretch(Sampler):
         num_step: int,
         num_walker: int,
         num_dim: int,
-        log_prob_func: Callable[[NDArray[float]], NDArray[float]],
+        log_prob_func: Callable,
+        args: list = [],
+        kwargs: dict = {},
         a: float = 2.0,
         frac_burn: float = 0.2,
         seed: int | None = None,
         flatten: bool = True,
     ):
         super().__init__(
-            num_step, num_walker, num_dim, log_prob_func, frac_burn, seed, flatten
+            num_step,
+            num_walker,
+            num_dim,
+            log_prob_func,
+            args,
+            kwargs,
+            frac_burn,
+            seed,
+            flatten,
         )
         assert (
             a > 1.0
