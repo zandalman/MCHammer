@@ -260,8 +260,8 @@ class SamplerMPI(Sampler):
         self.rank = rank
 
         num_walker_per_rank = int(np.ceil(self.num_walker / size))
-        idx_walker_min = min(self.rank * num_walker_per_rank, self.num_walker - 1)
-        idx_walker_max = min((self.rank + 1) * num_walker_per_rank, self.num_walker - 1)
+        idx_walker_min = min(self.rank * num_walker_per_rank, self.num_walker)
+        idx_walker_max = min((self.rank + 1) * num_walker_per_rank, self.num_walker)
         self.slice = slice(idx_walker_min, idx_walker_max)
 
         group = np.full(self.num_walker, False)
@@ -391,11 +391,12 @@ class SamplerBasicMPI(SamplerMPI):
             self.std_prop[:, i] = std_rel_prop * (high - low)
 
     def sample_prop(self, idx_group: int) -> NDArray[Numeric]:
-        assert idx_group == 0
         group = self.groups[idx_group]
         size_group = self.size_groups[idx_group]
         return self.rng.normal(
-            self.state_curr[group], self.std_prop, size=(size_group, self.num_dim)
+            self.state_curr[group],
+            self.std_prop[group],
+            size=(size_group, self.num_dim),
         )
 
     def prob_accept(
