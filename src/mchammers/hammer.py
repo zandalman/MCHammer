@@ -51,6 +51,7 @@ class Sampler(abc.ABC):
         num_walker: int,
         num_dim: int,
         prior_bounds: Sequence[tuple[Numeric, Numeric]],
+        state_init: NDArray[Numeric],
         log_prob_func: Callable[..., NDArray[Numeric]],
         args: Sequence[Any] | None = None,
         kwargs: Dict[Any, Any] | None = None,
@@ -75,6 +76,7 @@ class Sampler(abc.ABC):
         self.num_walker = num_walker
         self.num_dim = num_dim
         self.prior_bounds = prior_bounds
+        self.state_init = state_init
         self.log_prob_func = log_prob_func
         self.args = [] if args is None else args
         self.kwargs = {} if kwargs is None else kwargs
@@ -91,11 +93,11 @@ class Sampler(abc.ABC):
             (self.num_step - self.num_step_burn, self.num_walker, self.num_dim)
         )
 
-        self.state_init = np.zeros((self.num_walker, self.num_dim))
-        for i, (low, high) in enumerate(prior_bounds):
-            self.state_init[:, i] = (
-                self.rng.random(self.num_walker) * (high - low) + low
-            )
+        # self.state_init = np.zeros((self.num_walker, self.num_dim))
+        # for i, (low, high) in enumerate(prior_bounds):
+        #     self.state_init[:, i] = (
+        #         self.rng.random(self.num_walker) * (high - low) + low
+        #     )
 
         self.groups = [np.full(self.num_walker, True)]
         self.size_groups = [self.num_walker]
@@ -231,6 +233,7 @@ class SamplerMPI(Sampler):
         num_walker: int,
         num_dim: int,
         prior_bounds: Sequence[tuple[Numeric, Numeric]],
+        state_init: NDArray[Numeric],
         log_prob_func: Callable[..., NDArray[Numeric]],
         comm: object,
         mpi_sum: object,
@@ -247,6 +250,7 @@ class SamplerMPI(Sampler):
             num_walker,
             num_dim,
             prior_bounds,
+            state_init,
             log_prob_func,
             args,
             kwargs,
@@ -298,6 +302,7 @@ class SamplerBasic(Sampler):
         num_walker: int,
         num_dim: int,
         prior_bounds: Sequence[tuple[Numeric, Numeric]],
+        state_init: NDArray[Numeric],
         log_prob_func: Callable[..., NDArray[Numeric]],
         std_rel_prop: Numeric,
         args: Sequence[Any] | None = None,
@@ -311,6 +316,7 @@ class SamplerBasic(Sampler):
             num_walker,
             num_dim,
             prior_bounds,
+            state_init,
             log_prob_func,
             args,
             kwargs,
@@ -354,6 +360,7 @@ class SamplerBasicMPI(SamplerMPI):
         num_walker: int,
         num_dim: int,
         prior_bounds: Sequence[tuple[Numeric, Numeric]],
+        state_init: NDArray[Numeric],
         log_prob_func: Callable[..., NDArray[Numeric]],
         comm: object,
         mpi_sum: object,
@@ -371,6 +378,7 @@ class SamplerBasicMPI(SamplerMPI):
             num_walker,
             num_dim,
             prior_bounds,
+            state_init,
             log_prob_func,
             comm,
             mpi_sum,
@@ -422,6 +430,7 @@ class SamplerStretch(Sampler):
         num_walker: int,
         num_dim: int,
         prior_bounds: Sequence[tuple[Numeric, Numeric]],
+        state_init: NDArray[Numeric],
         log_prob_func: Callable[..., NDArray[Numeric]],
         args: Sequence[Any] | None = None,
         kwargs: Dict[Any, Any] | None = None,
@@ -435,6 +444,7 @@ class SamplerStretch(Sampler):
             num_walker,
             num_dim,
             prior_bounds,
+            state_init,
             log_prob_func,
             args,
             kwargs,

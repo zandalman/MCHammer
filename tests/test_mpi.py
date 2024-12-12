@@ -17,9 +17,22 @@ def test_sampler_basic_mpi():
     def log_prob_func(x, mu=0, sig=1):
         return -0.5 * np.sum(((x - mu) / sig) ** 2, axis=-1)
 
+    rng = np.random.default_rng()
+    state_init = rng.normal(0, 1, (32, 3))
+
     prior_bounds = [(-1, 1), (-1, 1), (-1, 1)]
     sampler = hammer.SamplerBasicMPI(
-        2**12, 32, 3, prior_bounds, log_prob_func, comm, MPI.SUM, size, rank, 0.75
+        2**12,
+        32,
+        3,
+        prior_bounds,
+        state_init,
+        log_prob_func,
+        comm,
+        MPI.SUM,
+        size,
+        rank,
+        0.75,
     )
     sampler.run()
     if rank == 0:
