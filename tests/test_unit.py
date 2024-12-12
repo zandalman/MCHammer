@@ -15,7 +15,6 @@ def test_sampler_basic():
         return -0.5 * np.sum(((x - mu) / sig) ** 2, axis=-1)
 
     rng = np.random.default_rng()
-
     state_init = rng.normal(0, 1, (32, 3))
 
     prior_bounds = [(-1, 1), (-1, 1), (-1, 1)]

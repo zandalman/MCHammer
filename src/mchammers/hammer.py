@@ -93,12 +93,6 @@ class Sampler(abc.ABC):
             (self.num_step - self.num_step_burn, self.num_walker, self.num_dim)
         )
 
-        # self.state_init = np.zeros((self.num_walker, self.num_dim))
-        # for i, (low, high) in enumerate(prior_bounds):
-        #     self.state_init[:, i] = (
-        #         self.rng.random(self.num_walker) * (high - low) + low
-        #     )
-
         self.groups = [np.full(self.num_walker, True)]
         self.size_groups = [self.num_walker]
 
