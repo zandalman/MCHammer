@@ -6,6 +6,7 @@ from mpi4py import MPI
 
 import mchammers
 
+
 def test_sampler_basic():
     """
     Test that the sampler recovers a multi-variate Gaussian
@@ -25,6 +26,7 @@ def test_sampler_basic():
     sampler.run()
     std = np.std(sampler.samples, axis=0)
     assert np.all(std) < 1.2
+
 
 def test_sampler_stretch():
     def log_prob_func(x, mu=0, sig=1):
@@ -48,6 +50,7 @@ def test_sampler_stretch():
 
     std = np.std(sampler.samples, axis=0)
     assert np.all(std < 1.2), f"Standard deviation out of bounds: {std}"
+
 
 @pytest.mark.mpi
 def test_sampler_basic_mpi():
