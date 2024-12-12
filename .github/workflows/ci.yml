@@ -53,13 +53,13 @@ jobs:
         if: runner.os == 'ubuntu-latest' || runner.os == 'macos-latest'
         uses: mpi4py/setup-mpi@v1
         with:
-          mpi: "mpich"      
-        
+          mpi: "mpich"
+
       - name: Setup MPI
         if: runner.os == 'windows-latest'
         uses: mpi4py/setup-mpi@v1
         with:
-          mpi: "intelmpi"   
+          mpi: "intelmpi"
 
       - name: Set up Python
         uses: actions/setup-python@v5
