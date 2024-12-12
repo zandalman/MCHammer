@@ -13,10 +13,6 @@ Numeric = Union[int, float]
 __all__ = ["Sampler", "SamplerBasic", "SamplerMPI", "SamplerBasicMPI"]
 
 
-def __dir__() -> Sequence[str]:
-    return __all__
-
-
 class Sampler(abc.ABC):
     """
     The Sampler object.
@@ -31,6 +27,8 @@ class Sampler(abc.ABC):
             The number of dimensions.
         prior_bounds:
             The prior bounds on the model parameters.
+        state_init:
+            The initial state.
         log_prob_func:
             The log probability function.
         args:
@@ -110,7 +108,7 @@ class Sampler(abc.ABC):
         ------------
             An array of samples of the proposal distribution.
         """
-        return np.array([0.0])
+        return np.array([0.0])  # pragma: no cover
 
     @abc.abstractmethod
     def prob_accept(
@@ -130,7 +128,7 @@ class Sampler(abc.ABC):
         ------------
             The acceptance probability.
         """
-        return np.array([0.0])
+        return np.array([0.0])  # pragma: no cover
 
     def calc_rate_accept(self) -> None:
         """Calculate the acceptance rate."""

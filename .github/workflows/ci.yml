@@ -41,7 +41,12 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ["3.8", "3.13"]
-        runs-on: [ubuntu-latest, macos-latest]
+        runs-on:
+          [
+            { os: ubuntu-latest, mpi: "mpich" },
+            { os: macos-latest, mpi: "mpich" },
+            { os: windows-latest, mpi: "intelmpi" },
+          ]
 
     steps:
       - name: Checkout
@@ -52,7 +57,7 @@ jobs:
       - name: Setup MPI
         uses: mpi4py/setup-mpi@v1
         with:
-          mpi: "mpich"
+          mpi: ${{ matrix.runs-on.mpi }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
