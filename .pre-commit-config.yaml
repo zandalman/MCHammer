@@ -53,11 +53,13 @@ repos:
     rev: "v2.3.0"
     hooks:
       - id: codespell
+        exclude: docs/
 
   - repo: https://github.com/shellcheck-py/shellcheck-py
     rev: "v0.10.0.1"
     hooks:
       - id: shellcheck
+        exclude: docs/
 
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: "v1.11.1"
