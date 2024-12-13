@@ -64,13 +64,13 @@ docs = [
   "nbconvert",
   "sphinx_gallery",
 ]
+autodoc_mock_imports = ["mpi4py"]
 
 [project.urls]
 Homepage = "https://github.com/zandalman/mchammers"
 "Bug Tracker" = "https://github.com/zandalman/mchammers/issues"
 Discussions = "https://github.com/zandalman/mchammers/discussions"
 Changelog = "https://github.com/zandalman/mchammers/releases"
-
 
 [tool.hatch]
 version.source = "vcs"
