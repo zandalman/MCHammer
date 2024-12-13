@@ -29,6 +29,7 @@ exclude_patterns = [
     ".venv",
 ]
 
+autodoc_mock_imports = ["mpi4py"]
 
 html_theme = "furo"
 html_logo = "images/mchammer.png"
