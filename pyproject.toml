@@ -64,7 +64,6 @@ docs = [
   "nbconvert",
   "sphinx_gallery",
 ]
-autodoc_mock_imports = ["mpi4py"]
 
 [project.urls]
 Homepage = "https://github.com/zandalman/mchammers"

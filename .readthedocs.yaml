@@ -12,6 +12,16 @@ build:
     - asdf install uv latest
     - asdf global uv latest
     - uv venv
-    - uv pip install .[docs]
+    - uv pip install .[docs] --no-deps
+    - uv pip install sphinx>=7.0
+    - uv pip install myst_parser>=0.13
+    - uv pip install sphinx_copybutton
+    - uv pip install sphinx_autodoc_typehints
+    - uv pip install furo>=2023.08.17
+    - uv pip install nbsphinx
+    - uv pip install matplotlib
+    - uv pip install ipython
+    - uv pip install nbconvert
+    - uv pip install sphinx_gallery
     - .venv/bin/python -m sphinx -T -b html -d docs/_build/doctrees -D
       language=en docs $READTHEDOCS_OUTPUT/html
